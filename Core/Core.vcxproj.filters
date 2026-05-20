@@ -2973,6 +2973,9 @@
     <ClInclude Include="SNES\Coprocessors\SufamiTurbo\SufamiTurbo.h">
       <Filter>SNES\Coprocessors\SufamiTurbo</Filter>
     </ClInclude>
+    <ClInclude Include="NES\Mappers\Unlicensed\Coolgirl.h">
+      <Filter>NES\Mappers\Unlicensed</Filter>
+    </ClInclude>
     <ClInclude Include="NES\Mappers\Unlicensed\Mapper487.h">
       <Filter>NES\Mappers\Unlicensed</Filter>
     </ClInclude>
@@ -2984,6 +2987,9 @@
     </ClInclude>
     <ClInclude Include="SNES\Input\SnesRumbleController.h">
       <Filter>SNES\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="NES\Mappers\Unlicensed\CoolEmu.h">
+      <Filter>NES\Mappers\Unlicensed</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3326,6 +3332,9 @@
     <ClCompile Include="NES\Mappers\Homebrew\Rainbow.cpp">
       <Filter>NES\Mappers\Homebrew</Filter>
     </ClCompile>
+    <ClCompile Include="NES\Mappers\Unlicensed\Coolgirl.cpp">
+      <Filter>NES\Mappers\Unlicensed</Filter>
+    </ClCompile>
     <ClCompile Include="SNES\Coprocessors\ST018\St018.cpp">
       <Filter>SNES\Coprocessors\ST018</Filter>
     </ClCompile>
@@ -3349,6 +3358,9 @@
     </ClCompile>
     <ClCompile Include="SNES\Input\SnesRumbleController.cpp">
       <Filter>SNES\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="NES\Mappers\Unlicensed\CoolEmu.cpp">
+      <Filter>NES\Mappers\Unlicensed</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

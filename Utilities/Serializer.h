@@ -218,7 +218,7 @@ public:
 
 	uint32_t GetVersion() { return _version; }
 	bool IsSaving() { return _saving; }
-	
+
 	SerializeFormat GetFormat() { return _format; }
 	unordered_map<string, SerializeMapValue>& GetMapValues() { return _mapValues; }
 
@@ -242,7 +242,7 @@ public:
 		static_assert(!std::is_pointer<T>::value, "[Serializer] Unexpected pointer");
 		static_assert(!std::is_class<T>::value || std::is_base_of<ISerializable, T>::value, "[Serializer] Object does not implement ISerializable");
 		static_assert(std::is_arithmetic<T>::value || std::is_enum<T>::value || std::is_base_of<ISerializable, T>::value, "[Serializer] Invalid value type");
-		
+
 		if constexpr(std::is_base_of<ISerializable, T>::value) {
 			Stream((ISerializable&)value, name, index);
 		} else {
@@ -414,17 +414,20 @@ public:
 		CheckDuplicateKey(key);
 
 		if(_saving) {
-			//Write key
 			_data.insert(_data.end(), key.begin(), key.end());
 			_data.push_back(0);
 
 			uint32_t elementCount = (uint32_t)values.size();
-			//Write array size
 			WriteValue((uint32_t)(elementCount * sizeof(T)));
 
-			//Write array content
-			for(uint32_t i = 0; i < elementCount; i++) {
-				WriteValue(values[i]);
+			if constexpr(sizeof(T) == 1) {
+				size_t oldSize = _data.size();
+				_data.resize(oldSize + elementCount);
+				memcpy(_data.data() + oldSize, values.data(), elementCount);
+			} else {
+				for(uint32_t i = 0; i < elementCount; i++) {
+					WriteValue(values[i]);
+				}
 			}
 		} else {
 			auto result = _values.find(key);
@@ -433,10 +436,14 @@ public:
 				uint32_t elementCount = savedValue.Size / sizeof(T);
 				values.resize(elementCount);
 
-				uint8_t* src = savedValue.DataPtr;
-				for(uint32_t i = 0; i < elementCount; i++) {
-					ReadValue(values[i], src);
-					src += sizeof(T);
+				if constexpr(sizeof(T) == 1) {
+					memcpy(values.data(), savedValue.DataPtr, savedValue.Size);
+				} else {
+					uint8_t* src = savedValue.DataPtr;
+					for(uint32_t i = 0; i < elementCount; i++) {
+						ReadValue(values[i], src);
+						src += sizeof(T);
+					}
 				}
 			} else {
 				values.clear();

@@ -93,7 +93,9 @@ protected:
 	virtual uint16_t GetChrRamPageSize() { return GetChrPageSize(); }
 
 	//Save ram is battery backed and saved to disk
+public:
 	virtual uint32_t GetSaveRamSize() { return 0x2000; }
+protected:
 	virtual uint32_t GetSaveRamPageSize() { return 0x2000; }
 	virtual bool ForceChrBattery() { return false; }
 	
@@ -143,8 +145,10 @@ protected:
 	void SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, uint8_t* sourceMemory, uint32_t sourceOffset, uint32_t sourceSize, int8_t accessType = -1);
 	void RemovePpuMemoryMapping(uint16_t startAddr, uint16_t endAddr);
 
-	bool HasBattery();
+public:
+	virtual bool HasBattery();
 	virtual void LoadBattery();
+protected:
 	string GetBatteryFilename();
 
 	uint32_t GetPrgPageCount();
@@ -159,9 +163,9 @@ protected:
 
 	void AddRegisterRange(uint16_t startAddr, uint16_t endAddr, MemoryOperation operation = MemoryOperation::Any);
 	void RemoveRegisterRange(uint16_t startAddr, uint16_t endAddr, MemoryOperation operation = MemoryOperation::Any);
-
+public:
 	void Serialize(Serializer& s) override;
-
+protected:
 	void RestorePrgChrState();
 
 	void BaseProcessCpuClock();
@@ -183,8 +187,9 @@ protected:
 		//Open bus - "When CHR is disabled, the pattern tables are open bus. Theoretically, this should return the LSB of the address read, but real-world behavior varies."
 		return addr;
 	}
-
+public:
 	virtual vector<MapperStateEntry> GetMapperStateEntries() { return {}; }
+protected:
 
 	void LoadRomPatch(vector<uint8_t>& orgPrgRom, vector<uint8_t>* orgChrRom = nullptr);
 	void SaveRom(vector<uint8_t>& orgPrgRom, vector<uint8_t>* orgChrRom = nullptr);

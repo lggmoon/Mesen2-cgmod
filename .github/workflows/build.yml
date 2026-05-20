@@ -1,6 +1,16 @@
 name: Build Mesen
 
-on: [push]
+on:
+  push:
+    branches: [ "main", "master" ]
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+  pull_request:
+    branches: [ "main", "master" ]
+  release:
+    types: [ created ]
+  workflow_dispatch:
 
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -49,9 +59,9 @@ jobs:
       - name: Upload Mesen
         uses: actions/upload-artifact@v4
         with:
-          name: Mesen (Windows - ${{ matrix.platform.targetframework }}${{ matrix.platform.aotString }})
+          name: Mesen-cgmod-win-${{ matrix.platform.targetframework }}-${{ matrix.platform.aot == true && 'aot' || 'singlefile' }}
           path: |
-            build/TmpReleaseBuild/Mesen.exe
+            publish/Mesen.exe
 
 
   linux:
@@ -94,10 +104,10 @@ jobs:
 
       - name: Setup CCache
         uses: ./.github/actions/setup-ccache-action
-       
+
       - name: Write commit SHA1 to file
         uses: ./.github/actions/build-sha1-action
-        
+
       # stderr is not detected as a TTY, so diagnostics are by default printed without colours;
       # forcing colours makes the log a little nicer to read.
       - name: Build Mesen
@@ -107,7 +117,7 @@ jobs:
       - name: Upload Mesen
         uses: actions/upload-artifact@v4
         with:
-          name: Mesen (Linux - ${{ matrix.platform.os }} - ${{ matrix.compiler }})
+          name: Mesen-cgmod-linux-${{ matrix.platform.os }}-${{ matrix.compiler }}
           path: bin/linux-${{ matrix.platform.path }}/Release/linux-${{ matrix.platform.path }}/publish/Mesen
 
   appimage:
@@ -148,7 +158,7 @@ jobs:
       - name: Upload Mesen (AppImage)
         uses: actions/upload-artifact@v4
         with:
-          name: Mesen (Linux ${{ matrix.platform.name }} - AppImage)
+          name: Mesen-cgmod-linux-appimage-${{ matrix.platform.name }}
           path: Mesen.AppImage
 
 
@@ -167,6 +177,7 @@ jobs:
             make_flags: "USE_AOT=true"
       fail-fast: false
     runs-on: ${{ matrix.platform.os }}
+    if: false  # 默认禁用，需要时改为 true
 
     steps:
       - name: Checkout repo
@@ -233,5 +244,55 @@ jobs:
       - name: Upload Mesen
         uses: actions/upload-artifact@v4
         with:
-          name: Mesen (macOS - ${{ matrix.platform.os }} - ${{ matrix.compiler }})
+          name: Mesen-cgmod-macos-${{ matrix.platform.arch }}-${{ matrix.compiler }}
           path: bin/osx-${{ matrix.platform.arch }}/Release/Mesen.app.zip
+
+  # Auto-publish release when a tag is created
+  publish-release:
+    needs: [windows, linux, appimage]
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+
+      - name: Flatten and rename files
+        run: |
+          cd release-assets
+          for dir in Mesen-cgmod-win-*/; do
+            artifact_name="${dir%/}"
+            (cd "$dir" && zip -r "../${artifact_name}.zip" .)
+          done
+          for dir in Mesen-cgmod-linux-ubuntu-*/; do
+            artifact_name="${dir%/}"
+            mesen_bin=$(find "$dir" -name "Mesen" -type f | head -1)
+            if [ -n "$mesen_bin" ]; then
+              tar czf "${artifact_name}.tar.gz" -C "$(dirname "$mesen_bin")" Mesen
+            fi
+          done
+          for dir in Mesen-cgmod-linux-appimage-*/; do
+            artifact_name="${dir%/}"
+            appimg=$(find "$dir" -name "Mesen.AppImage" -type f | head -1)
+            if [ -n "$appimg" ]; then
+              mv "$appimg" "${artifact_name}.AppImage"
+            fi
+          done
+          for dir in Mesen-cgmod-macos-*/; do
+            artifact_name="${dir%/}"
+            macos_zip=$(find "$dir" -name "Mesen.app.zip" -type f | head -1)
+            if [ -n "$macos_zip" ]; then
+              mv "$macos_zip" "${artifact_name}.zip"
+            fi
+          done
+          find . -type d -empty -delete
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-assets/*
+          generate_release_notes: true
+          make_latest: true
+          overwrite: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

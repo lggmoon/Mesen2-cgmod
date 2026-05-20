@@ -32,7 +32,7 @@ uint16_t BaseMapper::InternalGetSaveRamPageSize() { return std::min((uint32_t)Ge
 uint16_t BaseMapper::InternalGetWorkRamPageSize() { return std::min((uint32_t)GetWorkRamPageSize(), _workRamSize); }
 uint16_t BaseMapper::InternalGetChrRomPageSize() { return std::min((uint32_t)GetChrPageSize(), _chrRomSize); }
 uint16_t BaseMapper::InternalGetChrRamPageSize() { return std::min((uint32_t)GetChrRamPageSize(), _chrRamSize); }
-	
+
 bool BaseMapper::ValidateAddressRange(uint16_t startAddr, uint16_t endAddr)
 {
 	if((startAddr & 0xFF) || (endAddr & 0xFF) != 0xFF) {
@@ -69,7 +69,7 @@ void BaseMapper::SetCpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, int16
 				return;
 			}
 			pageCount = _saveRamSize / pageSize;
-			
+
 			defaultAccessType |= MemoryAccessType::Write;
 			break;
 		case PrgMemoryType::WorkRam:
@@ -82,7 +82,7 @@ void BaseMapper::SetCpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, int16
 			}
 
 			pageCount = _workRamSize / pageSize;
-			
+
 			defaultAccessType |= MemoryAccessType::Write;
 			break;
 		default:
@@ -105,9 +105,9 @@ void BaseMapper::SetCpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, int16
 		}
 	};
 	wrapPageNumber(pageNumber);
-	
+
 	accessType = accessType != -1 ? accessType : defaultAccessType;
-	
+
 	if((uint16_t)(endAddr - startAddr) >= pageSize) {
 		#ifdef _DEBUG
 		uint16_t gap = endAddr - startAddr + 1;
@@ -115,7 +115,7 @@ void BaseMapper::SetCpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, int16
 			MessageManager::DisplayMessage("Debug", "Tried to map undefined prg - page size too small for selected range.");
 		}
 		#endif
-		
+
 		//If range is bigger than a single page, keep going until we reach the last page
 		uint32_t addr = startAddr;
 		while(addr <= endAddr - pageSize + 1) {
@@ -283,7 +283,7 @@ void BaseMapper::SetPpuMemoryMapping(uint16_t startAddr, uint16_t endAddr, ChrMe
 
 	uint32_t sourceSize = 0;
 	switch(type) {
-		case ChrMemoryType::Default: 
+		case ChrMemoryType::Default:
 		case ChrMemoryType::ChrRom:
 			sourceMemory = _chrRom;
 			sourceSize = _chrRomSize;
@@ -450,7 +450,7 @@ uint32_t BaseMapper::GetDipSwitches()
 	uint32_t mask = (1 << GetDipSwitchCount()) - 1;
 	return _emu->GetSettings()->GetGameConfig().DipSwitches & mask;
 }
-		
+
 bool BaseMapper::HasBattery()
 {
 	return _romInfo.HasBattery;
@@ -661,7 +661,7 @@ void BaseMapper::Initialize(NesConsole* console, RomData& romData)
 		case BusConflictType::Default: _hasBusConflicts = HasBusConflicts(); break;
 		case BusConflictType::Yes: _hasBusConflicts = true; break;
 		case BusConflictType::No: _hasBusConflicts = false; break;
-	}	
+	}
 
 	if(_hasBusConflicts) {
 		MessageManager::Log("[iNes] Bus conflicts enabled");
@@ -670,7 +670,7 @@ void BaseMapper::Initialize(NesConsole* console, RomData& romData)
 	_saveRam = new uint8_t[_saveRamSize];
 
 	_emu->RegisterMemory(MemoryType::NesSaveRam, _saveRam, _saveRamSize);
-	
+
 	_workRam = new uint8_t[_workRamSize];
 	_emu->RegisterMemory(MemoryType::NesWorkRam, _workRam, _workRamSize);
 
@@ -686,7 +686,7 @@ void BaseMapper::Initialize(NesConsole* console, RomData& romData)
 	if(_nametableCount == 0) {
 		_nametableCount = romData.Info.Mirroring == MirroringType::FourScreens ? 4 : 2;
 	}
-	
+
 	_ntRamSize = _nametableCount * BaseMapper::NametableSize;
 	_nametableRam = new uint8_t[_ntRamSize];
 	_console->InitializeRam(_nametableRam, _ntRamSize);
@@ -797,7 +797,7 @@ void BaseMapper::SetNametable(uint8_t index, uint8_t nametableIndex)
 	}
 
 	SetPpuMemoryMapping(0x2000 + index * 0x400, 0x2000 + (index + 1) * 0x400 - 1, nametableIndex, ChrMemoryType::NametableRam);
-	
+
 	//Mirror $2000-$2FFF to $3000-$3FFF, while keeping a distinction between the addresses
 	//Previously, $3000-$3FFF was being "redirected" to $2000-$2FFF to avoid MMC3 IRQ issues (which is incorrect)
 	//More info here: https://forums.nesdev.com/viewtopic.php?p=132145#p132145
@@ -850,7 +850,7 @@ MirroringType BaseMapper::GetMirroringType()
 {
 	return _mirroringType;
 }
-	
+
 uint8_t BaseMapper::ReadRam(uint16_t addr)
 {
 	if(_allowRegisterRead && _isReadRegisterAddr[addr]) {
@@ -876,7 +876,7 @@ uint8_t BaseMapper::DebugReadRam(uint16_t addr)
 	} else {
 		//assert(false);
 	}
-	
+
 	//Fake open bus
 	return addr >> 8;
 }
@@ -1161,7 +1161,7 @@ CartridgeState BaseMapper::GetState()
 	for(int i = 0; i < entries.size(); i++) {
 		state.CustomEntries[i] = entries[i];
 	}
-	
+
 	return state;
 }
 
@@ -1185,7 +1185,7 @@ void BaseMapper::GetRomFileData(vector<uint8_t> &out, bool asIpsFile, uint8_t* h
 		if(HasChrRom()) {
 			newFile.insert(newFile.end(), _chrRom, _chrRom + _chrRomSize);
 		}
-		
+
 		//Get edited rom
 		if(asIpsFile) {
 			vector<uint8_t> originalFile;

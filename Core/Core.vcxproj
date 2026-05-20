@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -27,6 +27,8 @@
     <ClInclude Include="NES\Debugger\IExtModeMapperDebug.h" />
     <ClInclude Include="NES\Mappers\Homebrew\FlashS29.h" />
     <ClInclude Include="NES\Mappers\Nintendo\CnromProtect.h" />
+    <ClInclude Include="NES\Mappers\Unlicensed\CoolEmu.h" />
+    <ClInclude Include="NES\Mappers\Unlicensed\Coolgirl.h" />
     <ClInclude Include="NES\Mappers\Unlicensed\Mapper487.h" />
     <ClInclude Include="NES\OpnInterface.h" />
     <ClInclude Include="SMS\Input\ColecoVisionController.h" />
@@ -873,6 +875,8 @@
     <ClCompile Include="NES\Loaders\StudyBoxLoader.cpp" />
     <ClCompile Include="NES\Loaders\UnifLoader.cpp" />
     <ClCompile Include="NES\Mappers\Homebrew\Rainbow.cpp" />
+    <ClCompile Include="NES\Mappers\Unlicensed\CoolEmu.cpp" />
+    <ClCompile Include="NES\Mappers\Unlicensed\Coolgirl.cpp" />
     <ClCompile Include="Shared\Utilities\emu2413.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='PGO Profile|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>

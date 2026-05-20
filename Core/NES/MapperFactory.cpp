@@ -247,6 +247,7 @@
 #include "NES/Mappers/Unlicensed/Mapper487.h"
 #include "NES/Mappers/Unlicensed/Nanjing.h"
 #include "NES/Mappers/Unlicensed/Nina01.h"
+#include "NES/Mappers/Unlicensed/Coolgirl.h"
 #include "NES/Mappers/Unlicensed/Nina03_06.h"
 #include "NES/Mappers/Unlicensed/NovelDiamond.h"
 #include "NES/Mappers/Unlicensed/Racermate.h"
@@ -275,6 +276,7 @@
 #include "NES/Mappers/Whirlwind/Lh51.h"
 #include "NES/Mappers/Whirlwind/Mapper40.h"
 #include "NES/Mappers/Whirlwind/Smb2j.h"
+#include "NES/Mappers/Unlicensed/CoolEmu.h"
 
 BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 {
@@ -283,7 +285,7 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 1: return new MMC1();
 		case 2: return new UNROM();
 		case 3: return new CNROM();
-		case 4: 
+		case 4:
 			if(romData.Info.SubMapperID == 3) {
 				return new McAcc();
 			} else {
@@ -317,7 +319,7 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 31: return new NsfCart31();
 		case 32: return new IremG101();
 		case 33: return new TaitoTc0190();
-		case 34: 
+		case 34:
 			switch(romData.Info.SubMapperID) {
 				case 0: return (romData.ChrRom.size() > 0) ? (BaseMapper*)new Nina01() : (BaseMapper*)new BnRom(); //BnROM uses CHR RAM (so no CHR rom in the .NES file)
 				case 1: return new Nina01();
@@ -591,7 +593,7 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 339: break; //K-3006
 		case 340: break; //K-3036
 		case 341: break; //TJ-03
-		case 342: break; //COOLGIRL
+		case 342: return new Coolgirl();
 		//343
 		case 344: break; //GN26
 		case 345: break; //L6IN1
@@ -620,7 +622,7 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case 528: break; //831128C
 		case 529: return new T230();
 		case 530: return new Ax5705();
-		
+
 		case 552: return new TaitoX1017();
 
 		case 682: return new Rainbow();
@@ -639,6 +641,8 @@ BaseMapper* MapperFactory::GetMapperFromID(RomData &romData)
 		case MapperFactory::StudyBoxMapperID: return new StudyBox();
 		case MapperFactory::NsfMapperID: return new NsfMapper();
 		case MapperFactory::FdsMapperID: return new Fds();
+
+		case CoolEmu::MapperID: return new CoolEmu();
 	}
 
 	if(romData.Info.MapperID != UnifBoards::UnknownBoard) {

@@ -188,3 +188,111 @@ vector<uint8_t> IpsPatcher::CreatePatch(vector<uint8_t> originalData, vector<uin
 
 	return patchFile;
 }
+
+vector<uint8_t> IpsPatcher::CreatePatchFrom0xFF(const vector<uint8_t>& newData)
+{
+	vector<uint8_t> patchFile;
+
+	uint8_t header[5] = { 'P', 'A', 'T', 'C', 'H' };
+	patchFile.insert(patchFile.end(), header, header + sizeof(header));
+
+	size_t i = 0, len = newData.size();
+	while(i < len) {
+		while(i < len && newData[i] == 0xFF) {
+			i++;
+		}
+		if(i < len) {
+			IpsRecord patchRecord;
+			uint8_t rleByte = newData[i];
+			uint8_t rleCount = 0;
+			bool createRleRecord = false;
+			patchRecord.Address = (uint32_t)i;
+			patchRecord.Length = 0;
+			while(i < len && patchRecord.Length < 65535 && newData[i] != 0xFF) {
+				if(newData[i] == rleByte) {
+					rleCount++;
+				} else if(createRleRecord) {
+					break;
+				} else {
+					rleByte = newData[i];
+					rleCount = 1;
+				}
+
+				patchRecord.Length++;
+				i++;
+
+				if((patchRecord.Length == rleCount && rleCount > 3) || rleCount > 13) {
+					if(patchRecord.Length == rleCount) {
+						createRleRecord = true;
+					} else {
+						patchRecord.Length -= rleCount;
+						i -= rleCount;
+						break;
+					}
+				}
+			}
+			if(createRleRecord) {
+				patchRecord.Length = 0;
+				patchRecord.RepeatCount = rleCount;
+				patchRecord.Value = rleByte;
+			} else {
+				patchRecord.Replacement = vector<uint8_t>(newData.data() + patchRecord.Address, newData.data() + patchRecord.Address + patchRecord.Length);
+			}
+			patchRecord.WriteRecord(patchFile);
+		}
+	}
+
+	uint8_t endOfFile[3] = { 'E', 'O', 'F' };
+	patchFile.insert(patchFile.end(), endOfFile, endOfFile + sizeof(endOfFile));
+
+	return patchFile;
+}
+
+bool IpsPatcher::PatchBufferAgainst0xFF(vector<uint8_t>& ipsData, size_t outputSize, vector<uint8_t>& output)
+{
+	std::stringstream ss;
+	ss.write((char*)ipsData.data(), ipsData.size());
+
+	char header[5];
+	ss.read((char*)&header, 5);
+	if(memcmp((char*)&header, "PATCH", 5) != 0) {
+		return false;
+	}
+
+	vector<IpsRecord> records;
+	int32_t truncateOffset = -1;
+	size_t maxOutputSize = outputSize;
+	while(!ss.eof()) {
+		IpsRecord record;
+		if(record.ReadRecord(ss)) {
+			if(record.Address + record.Length + record.RepeatCount > maxOutputSize) {
+				maxOutputSize = record.Address + record.Length + record.RepeatCount;
+			}
+			records.push_back(record);
+		} else {
+			uint8_t buffer[3];
+			ss.read((char*)buffer, 3);
+			if(!ss.eof()) {
+				truncateOffset = buffer[2] | (buffer[1] << 8) | (buffer[0] << 16);
+			}
+			break;
+		}
+	}
+
+	output.resize(maxOutputSize);
+	std::fill(output.begin(), output.end(), 0xFF);
+
+	for(IpsRecord record : records) {
+		if(record.Length == 0) {
+			std::fill(&output[record.Address], &output[record.Address]+record.RepeatCount, record.Value);
+		} else {
+			std::copy(record.Replacement.begin(), record.Replacement.end(), output.begin()+record.Address);
+		}
+	}
+
+	if(truncateOffset != -1 && (int32_t)output.size() > truncateOffset) {
+		output.resize(truncateOffset);
+	}
+
+	return true;
+}

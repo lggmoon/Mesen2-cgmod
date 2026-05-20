@@ -1,6 +1,8 @@
 #pragma once
 #include <thread>
 #include <atomic>
+#include <memory>
+#include <optional>
 
 struct libevdev;
 struct ff_effect;

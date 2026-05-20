@@ -7,10 +7,13 @@
 # Generated on 2022-07-21 using:
 #     -NewRisingSun's NES 2.0 header database (2021-12-25)
 #     -NesCartDB (dated 2017-08-21)
-#     -Nestopia UE's latest DB (dated 2015-10-22) 
-# 
+#     -Nestopia UE's latest DB (dated 2015-10-22)
+#
 # Fields: CRC, System, Board, PCB, Chip, Mapper, PrgRomSize, ChrRomSize, ChrRamSize, WorkRamSize, SaveRamSize, Battery, Mirroring, Controller Type, Bus Conflicts, SubMapper, VsSystemType, PpuModel
 #
+# 2026 05 16 fix by lggmoon:
+#      -C5FAFE2C,NesPal # Yoko.h <!-- Unlicensed Taiwan&amp;Hong Kong\Master Fighter VI'.nes -->
+#      -E58645CF,NesPal # Yoko.h <!-- Unlicensed Taiwan&amp;Hong Kong\Mortal Kombat II+V Pro.nes -->
 ###################################################################################
 00098369,NesNtsc,,,,562,128,128,0,8,0,0,v,1,,1,,
 000B7B60,NesNtsc,,,,1,128,128,0,0,8,1,h,1,,0,,
@@ -8275,7 +8278,7 @@ C5F3F22C,NesNtsc,,,,562,128,32,0,0,0,0,h,1,,5,,
 C5F58D23,NesNtsc,,,,45,1024,1024,0,0,0,0,h,1,,0,,
 C5F7C8E2,NesNtsc,,,,4,256,256,0,0,8,1,h,1,,0,,
 C5F8653E,NesNtsc,,,,59,128,64,0,0,0,0,h,1,,0,,
-C5FAFE2C,NesNtsc,,,,264,128,512,0,0,0,0,h,1,,0,,
+C5FAFE2C,NesPal,,,,264,128,512,0,0,0,0,h,1,,0,,
 C5FB1766,Famicom,,,,3,32,32,0,0,0,0,h,1,,2,,
 C6000085,NesNtsc,NES-UNROM,NES-UNROM-09,,2,128,0,8,0,0,0,h,1,,2,,
 C6002F42,NesNtsc,,,,561,256,0,32,8,0,0,v,1,,1,,
@@ -9559,7 +9562,7 @@ E56AA5E8,NesNtsc,,,,4,128,128,0,0,0,0,h,1,,0,,
 E575687C,NesNtsc,NES-UNROM,NES-UNROM-10,,2,128,0,8,0,0,0,h,1,,2,,
 E57E5384,NesPal,NES-NROM-256,NES-NROM-256-03,,0,32,8,0,0,0,0,v,32,,0,,
 E583EC5E,Famicom,,,,0,16,8,,0,0,0,v,,,,,
-E58645CF,NesNtsc,,,,264,256,256,0,0,0,0,h,1,,0,,
+E58645CF,NesPal,,,,264,256,256,0,0,0,0,h,1,,0,,
 E58D46F1,NesNtsc,,,,4,128,128,0,0,0,0,h,1,,0,,
 E5901A99,NesPal,NES-TLROM,NES-TLROM-03,MMC3C,4,128,128,0,0,0,0,h,1,,0,,
 E592F53A,NesPal,NES-CNROM,NES-CNROM-07,,3,32,32,0,0,0,0,v,11,,2,,
